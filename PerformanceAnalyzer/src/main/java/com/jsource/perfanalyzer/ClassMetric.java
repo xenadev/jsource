@@ -8,25 +8,26 @@ package com.jsource.perfanalyzer;
  */
 public enum ClassMetric {
 
-    CLASS_NAME("Name"), ATFD("ATFD"), WMC("WMC"), TCC("TCC"), METHOD_SUM_LOC(
-	    "method.sum_LOC");
+    CLASS_NAME("Name", 0), ATFD("ATFD", 1), WMC("WMC", 2), TCC("TCC", 3), METHOD_SUM_LOC(
+            "method.sum_LOC", 4);
 
-    private String name;
+    private final String name;
+    private final int orderNum;
 
-    private ClassMetric(String name) {
-	this.name = name;
+    private ClassMetric(String name, int orderNum) {
+        this.name = name;
+        this.orderNum = orderNum;
     }
 
     public String[] getAllNames() {
-	String[] names = new String[] { CLASS_NAME.name, ATFD.name, WMC.name,
-		TCC.name, METHOD_SUM_LOC.name };
+        String[] names = new String[]{CLASS_NAME.name, ATFD.name, WMC.name,
+            TCC.name, METHOD_SUM_LOC.name};
 
-	return names;
+        return names;
     }
 
-    
     @Override
-    public String toString(){
-	return name;
+    public String toString() {
+        return name;
     }
 }
