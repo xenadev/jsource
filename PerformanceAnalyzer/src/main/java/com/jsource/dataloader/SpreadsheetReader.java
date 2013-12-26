@@ -5,9 +5,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
-import com.jsource.perfanalyzer.ClassMetric;
-import com.jsource.perfanalyzer.MethodMetric;
-
 import java.io.*;
 import java.util.Iterator;
 import java.util.Vector;
@@ -28,27 +25,7 @@ public class SpreadsheetReader implements MetricsReader {
      * java.lang.String)
      */
     public String[][] readMetrics(String[] metricNames, String filePath) {
-        String[][] result = null;
-
-        result = readColumns(metricNames, filePath);
-
-//        if (metricNames.length == ClassMetric.values().length) {
-//            result = new String[][]{
-//                {"ProfileController", "15", "23", "1", "243"},
-//                {"RPMAdapter", "14", "14", "1", "153"},
-//                {"RPMUtils", "1", "22", "0.29", "150"},
-//                {"TestController", "8", "9", "1", "130"},
-//                {"Serializer", "1", "9", "0.67", "64"},
-//                {"SubscriptionController", "10", "8", "0", "63"},
-//                {"SubscriptionBean", "0", "11", "0.11", "37"}};
-//        } else if (metricNames.length == MethodMetric.values().length) {
-//            result = new String[][]{
-//                {"setAppVersion", "0", "1", "0", "3", "1", "0", "2", "0",
-//                    "0", "0", "0", "Application"},
-//                {"getOptionsForUpdate", "0", "1", "0", "23", "1", "0",
-//                    "10", "3", "0.67", "0", "0", "ProfileController"}};
-//
-//        }
+        String[][] result = readColumns(metricNames, filePath);
         return result;
     }
 
@@ -114,6 +91,12 @@ public class SpreadsheetReader implements MetricsReader {
         return result;
     }
 
+    /**
+     * Converts two-dim cell vector to string two-dim array
+     *
+     * @param dataHolder Cells
+     * @return String cell values
+     */
     private String[][] convertCellVectorToArray(Vector dataHolder) {
         String[][] result = null;
 

@@ -28,6 +28,10 @@ public enum MethodMetric {
         return names;
     }
 
+    public int getOrderNum() {
+        return orderNum;
+    }
+    
     @Override
     public String toString() {
         return name;
