@@ -23,24 +23,46 @@ public class DisharmoniesFinder {
      * @param tcc
      * @return
      */
-    public static List<String> findGodClass(String[] classNames, double[] atfd, double[] wmc, double[] tcc) {
-        List<String> result = new ArrayList<String>();
-        for (int i = 0; i < classNames.length; i++) {
+    public static boolean isGodClass(double atfd, double wmc, double tcc) {
+        boolean result = false;
 
-            if ((atfd[i] > (double) SemanticThreshold.FEW.getValue())
-                    && (wmc[i] >= ThresholdWMC.VERY_HIGH.getValue())
-                    && (tcc[i] < NormalizedThreshold.ONE_THIRD.getValue())) {
-                result.add(classNames[i]);
-            } else {
-                System.out.println(classNames[i] + " Not a god class");
-            }
-
+        if ((atfd > SemanticThreshold.FEW.getValue())
+                && (wmc >= ThresholdWMC.VERY_HIGH.getValue())
+                && (tcc < NormalizedThreshold.ONE_THIRD.getValue())) {
+            result = true;
         }
 
         return result;
     }
 
-    public static boolean findFeatureEnvy(double atfd, double laa, double fdp) {
+    public static boolean isBrainClass(double loc, double wmc, double tcc) {
+        boolean result = false;
+
+        boolean isVeryLarge = false;
+        if (loc >= ThresholdClassLOC.VERY_HIGH.getValue()) {
+            isVeryLarge = true;
+        }
+
+        boolean isLargeAndComplex = false;
+        if (loc >= (2 * ThresholdClassLOC.VERY_HIGH.getValue())
+                && wmc >= (2 * ThresholdWMC.VERY_HIGH.getValue())) {
+            isLargeAndComplex = true;
+        }
+
+        boolean isComplexNonCoh = false;
+        if (wmc >= ThresholdWMC.VERY_HIGH.getValue()
+                && tcc < NormalizedThreshold.HALF.getValue()) {
+            isComplexNonCoh = true;
+        }
+
+        if ((isVeryLarge || isLargeAndComplex) && isComplexNonCoh) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    public static boolean isFeatureEnvy(double atfd, double laa, double fdp) {
         boolean result = false;
 
         if ((atfd > SemanticThreshold.FEW.getValue()) && (laa < NormalizedThreshold.ONE_THIRD.getValue())
@@ -51,13 +73,18 @@ public class DisharmoniesFinder {
         return result;
     }
 
-    public static boolean findBrainMethod(double loc, double cyclo, double maxnesting, double noav) {
+    public static boolean isBrainMethod(double loc, double cyclo, double maxnesting, double noav) {
         boolean result = false;
+
+        if ((loc > ThresholdClassLOC.HIGH.getValue() / 2) && (cyclo >= ThresholdCYCLO.HIGH.getValue()) && (maxnesting >= SemanticThreshold.SEVERAL.getValue())
+                && (noav > SemanticThreshold.SHORT_MEM_CAPACITY_MAX.getValue())) {
+            result = true;
+        }
 
         return result;
     }
 
-    public static boolean findIntensiveCoupling(double cint, double cdisp, double maxnesting) {
+    public static boolean isIntensiveCoupling(double cint, double cdisp, double maxnesting) {
         boolean result = false;
 
         if ((maxnesting > SemanticThreshold.ONE_SHALLOW.getValue())
@@ -70,7 +97,7 @@ public class DisharmoniesFinder {
         return result;
     }
 
-    public static boolean findDispersedCoupling(double cint, double cdisp, double maxnesting) {
+    public static boolean isDispersedCoupling(double cint, double cdisp, double maxnesting) {
         boolean result = false;
 
         if ((maxnesting > SemanticThreshold.ONE_SHALLOW.getValue())
@@ -81,7 +108,7 @@ public class DisharmoniesFinder {
         return result;
     }
 
-    public static boolean findShotgunSurgery(double cm, double cc) {
+    public static boolean isShotgunSurgery(double cm, double cc) {
         boolean result = false;
 
         if (cm > SemanticThreshold.SHORT_MEM_CAPACITY_MAX.getValue() && cc > SemanticThreshold.SEVERAL.getValue()) {

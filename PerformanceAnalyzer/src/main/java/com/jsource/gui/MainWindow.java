@@ -154,7 +154,7 @@ public class MainWindow extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Method name", "ATFD", "LAA", "FDP", "LOC", "CYCLO", "MAXNESTING", "NOAV", "CINT", "CDISP", "CM", "CC", "Scope name"
+                "Method name", "Scope name", "ATFD", "LAA", "FDP", "LOC", "CYCLO", "MAXNESTING", "NOAV", "CINT", "CDISP", "CM", "CC"
             }
         ) {
             Class[] types = new Class [] {
@@ -491,6 +491,7 @@ public class MainWindow extends javax.swing.JFrame {
         List<ReportItem> methodsReport = new ArrayList<ReportItem>();
         if (methodsAnalysisRequested) {
             methodsReport = analyzer.analyzePerformanceForMethods(currentProject.getMethodMetrics());
+            System.out.println("Methods analyzed");
 
         }
 
@@ -498,7 +499,10 @@ public class MainWindow extends javax.swing.JFrame {
         List<ReportItem> classesReport = new ArrayList<ReportItem>();
         if (classesAnalysisRequested) {
             classesReport = analyzer.analyzePerformanceForClasses(currentProject.getClassMetrics());
+            System.out.println("Classes analyzed");
         }
+        
+        
 
         //add analysis result to project report (if any results exist)
         if (methodsReport.isEmpty() && classesReport.isEmpty()) {

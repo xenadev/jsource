@@ -8,9 +8,9 @@ package com.jsource.perfanalyzer;
  */
 public enum MethodMetric {
 
-    METHOD_NAME("Name", 0), ATFD("ATFD", 1), LAA("LAA", 2), FDP("FDP", 3), LOC("LOC", 4), CYCLO(
-            "CYCLO", 5), MAXNESTING("MAXNESTING", 6), NOAV("NOAV", 7), CINT("CINT", 8), CDISP(
-                    "CDISP", 9), CM("CM", 10), CC("CC", 11), SCOPE_NAME("scope name", 12);
+    METHOD_NAME("Name", 0), SCOPE_NAME("scope name", 1), ATFD("ATFD", 2), LAA("LAA", 3), FDP("FDP", 4), LOC("LOC", 5), CYCLO(
+            "CYCLO", 6), MAXNESTING("MAXNESTING", 7), NOAV("NOAV", 8), CINT("CINT", 9), CDISP(
+                    "CDISP", 10), CM("CM", 11), CC("CC", 12);
 
     private final String name;
     private final int orderNum;
@@ -31,7 +31,7 @@ public enum MethodMetric {
     public int getOrderNum() {
         return orderNum;
     }
-    
+
     @Override
     public String toString() {
         return name;

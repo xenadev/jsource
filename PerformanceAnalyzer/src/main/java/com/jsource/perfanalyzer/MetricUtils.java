@@ -40,7 +40,7 @@ public class MetricUtils {
         return result;
     }
 
-    public static double[][] convertMethodsMetricsFromStrToNum(String[][] metricsStr) {
+    public static double[][] convertMetricsFromStrToNum(String[][] metricsStr) {
         double[][] result = new double[metricsStr.length][metricsStr[0].length];
         for (int i = 0; i < metricsStr.length - 1; i++) {
             for (int j = 1; j < metricsStr[i].length; j++) {
@@ -55,6 +55,8 @@ public class MetricUtils {
 
         return result;
     }
+
+ 
 
     public static double[] getDoubleColumn(double[][] array, int index) {
         double[] column = new double[array.length];

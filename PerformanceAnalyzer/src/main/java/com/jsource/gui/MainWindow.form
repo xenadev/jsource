@@ -304,6 +304,7 @@
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="13" rowCount="28">
                         <Column editable="true" title="Method name" type="java.lang.String"/>
+                        <Column editable="true" title="Scope name" type="java.lang.String"/>
                         <Column editable="true" title="ATFD" type="java.lang.String"/>
                         <Column editable="true" title="LAA" type="java.lang.String"/>
                         <Column editable="true" title="FDP" type="java.lang.String"/>
@@ -315,7 +316,6 @@
                         <Column editable="true" title="CDISP" type="java.lang.String"/>
                         <Column editable="true" title="CM" type="java.lang.String"/>
                         <Column editable="true" title="CC" type="java.lang.String"/>
-                        <Column editable="true" title="Scope name" type="java.lang.String"/>
                       </Table>
                     </Property>
                   </Properties>

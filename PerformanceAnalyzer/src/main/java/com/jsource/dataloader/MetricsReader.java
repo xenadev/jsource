@@ -10,11 +10,10 @@ public interface MetricsReader {
 
     /**
      * Reads metric values from file.
-     * 
-     * @param metricNames
-     *            Metrics names
-     * @param filePath
-     *            Path to file
+     *
+     * @param metricNames Metrics names
+     * @param filePath Path to file
+     * @return Metric values
      */
     public String[][] readMetrics(String[] metricNames, String filePath);
 

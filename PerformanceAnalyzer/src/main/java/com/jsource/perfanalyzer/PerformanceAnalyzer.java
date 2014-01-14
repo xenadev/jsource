@@ -20,10 +20,11 @@ public class PerformanceAnalyzer {
         List<ReportItem> report = new ArrayList<ReportItem>();
         if (methodMetrics != null) {
             //convert metrics to doubles
-            double[][] methodMetricsNum = MetricUtils.convertMethodsMetricsFromStrToNum(methodMetrics);
+            double[][] methodMetricsNum = MetricUtils.convertMetricsFromStrToNum(methodMetrics);
 
             //get values of each metric
             String[] methodName = MetricUtils.getStringColumn(methodMetrics, MethodMetric.METHOD_NAME.getOrderNum());
+            String[] scopeName = MetricUtils.getStringColumn(methodMetrics, MethodMetric.SCOPE_NAME.getOrderNum());
             double[] atfd = MetricUtils.getDoubleColumn(methodMetricsNum, MethodMetric.ATFD.getOrderNum());
             double[] laa = MetricUtils.getDoubleColumn(methodMetricsNum, MethodMetric.LAA.getOrderNum());
             double[] fdp = MetricUtils.getDoubleColumn(methodMetricsNum, MethodMetric.FDP.getOrderNum());
@@ -42,32 +43,40 @@ public class PerformanceAnalyzer {
             List<String> dispersedCouplingMethods = new ArrayList<String>();
             List<String> shotgunSurgery = new ArrayList<String>();
 
+            int[] dishNumber = new int[methodName.length];
             //iterate over methods and check for disharmonies
             for (int i = 0; i < methodName.length; i++) {
+                int foundDisharmoniesCounter = 0;
                 //check feature envy
-                if (DisharmoniesFinder.findFeatureEnvy(atfd[i], laa[i], fdp[i])) {
-                    featureEnvyMethods.add(methodName[i]);
+                if (DisharmoniesFinder.isFeatureEnvy(atfd[i], laa[i], fdp[i])) {
+                    featureEnvyMethods.add(scopeName[i] + "." + methodName[i]);
+                    foundDisharmoniesCounter++;
                 }
 
                 //check brain method
-                if (DisharmoniesFinder.findBrainMethod(loc[i], cyclo[i], maxnesting[i], noav[i])) {
-                    brainMethods.add(methodName[i]);
+                if (DisharmoniesFinder.isBrainMethod(loc[i], cyclo[i], maxnesting[i], noav[i])) {
+                    brainMethods.add(scopeName[i] + "." + methodName[i]);
+                    foundDisharmoniesCounter++;
                 }
 
                 //check intensive coupling
-                if (DisharmoniesFinder.findIntensiveCoupling(cint[i], cdisp[i], maxnesting[i])) {
-                    intensiveCouplingMethods.add(methodName[i]);
+                if (DisharmoniesFinder.isIntensiveCoupling(cint[i], cdisp[i], maxnesting[i])) {
+                    intensiveCouplingMethods.add(scopeName[i] + "." + methodName[i]);
+                    foundDisharmoniesCounter++;
                 }
 
                 //check dispersed coupling
-                if (DisharmoniesFinder.findDispersedCoupling(cint[i], cdisp[i], maxnesting[i])) {
-                    dispersedCouplingMethods.add(methodName[i]);
+                if (DisharmoniesFinder.isDispersedCoupling(cint[i], cdisp[i], maxnesting[i])) {
+                    dispersedCouplingMethods.add(scopeName[i] + "." + methodName[i]);
+                    foundDisharmoniesCounter++;
                 }
 
                 //check shotgun surgery
-                if (DisharmoniesFinder.findShotgunSurgery(cm[i], cc[i])) {
-                    shotgunSurgery.add(methodName[i]);
+                if (DisharmoniesFinder.isShotgunSurgery(cm[i], cc[i])) {
+                    shotgunSurgery.add(scopeName[i] + "." + methodName[i]);
+                    foundDisharmoniesCounter++;
                 }
+                dishNumber[i] = foundDisharmoniesCounter;
 
             }
 
@@ -105,20 +114,47 @@ public class PerformanceAnalyzer {
         List<ReportItem> report = new ArrayList<ReportItem>();
         if (classMetrics != null) {
             //convert metrics to doubles
-            double[][] classMetricsNum = MetricUtils.convertMethodsMetricsFromStrToNum(classMetrics);
+            double[][] classMetricsNum = MetricUtils.convertMetricsFromStrToNum(classMetrics);
 
             //get values of each metric
             String[] classNames = MetricUtils.getStringColumn(classMetrics, ClassMetric.CLASS_NAME.getOrderNum());
             double[] atfd = MetricUtils.getDoubleColumn(classMetricsNum, ClassMetric.ATFD.getOrderNum());
             double[] wmc = MetricUtils.getDoubleColumn(classMetricsNum, ClassMetric.WMC.getOrderNum());
             double[] tcc = MetricUtils.getDoubleColumn(classMetricsNum, ClassMetric.TCC.getOrderNum());
+            double[] methSumLOC = MetricUtils.getDoubleColumn(classMetricsNum, ClassMetric.METHOD_SUM_LOC.getOrderNum());
 
-            //find God classes
-            List<String> godClasses = DisharmoniesFinder.findGodClass(classNames, atfd, wmc, tcc);
+            List<String> godClasses = new ArrayList<String>();
+            List<String> brainClasses = new ArrayList<String>();
+
+            int[] dishNumber = new int[classNames.length];
+
+            //iterate over classes and check for disharmonies
+            for (int i = 0; i < classNames.length; i++) {
+                int foundDisharmoniesCounter = 0;
+
+                //check god class
+                if (DisharmoniesFinder.isGodClass(atfd[i], wmc[i], tcc[i])) {
+                    godClasses.add(classNames[i]);
+                    foundDisharmoniesCounter++;
+                }
+
+                //check brain class
+                if (DisharmoniesFinder.isBrainClass(methSumLOC[i], wmc[i], tcc[i])) {
+                    brainClasses.add(classNames[i]);
+                    foundDisharmoniesCounter++;
+                }
+
+                dishNumber[i] = foundDisharmoniesCounter;
+            }
 
             //report about God classes
             for (String item : godClasses) {
                 report.add(new ReportItem(item, CLASS_LEVEL, "God Class"));
+            }
+
+            //report about Brain class
+            for (String item : brainClasses) {
+                report.add(new ReportItem(item, CLASS_LEVEL, "Brain Class"));
             }
 
         }
