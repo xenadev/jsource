@@ -5,7 +5,9 @@
 package com.jsource.perfanalyzer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -37,72 +39,83 @@ public class PerformanceAnalyzer {
             double[] cm = MetricUtils.getDoubleColumn(methodMetricsNum, MethodMetric.CM.getOrderNum());
             double[] cc = MetricUtils.getDoubleColumn(methodMetricsNum, MethodMetric.CC.getOrderNum());
 
-            List<String> featureEnvyMethods = new ArrayList<String>();
-            List<String> brainMethods = new ArrayList<String>();
-            List<String> intensiveCouplingMethods = new ArrayList<String>();
-            List<String> dispersedCouplingMethods = new ArrayList<String>();
-            List<String> shotgunSurgery = new ArrayList<String>();
+            HashMap<Integer, Integer> weightMap = new HashMap<Integer, Integer>();
+            Map<Integer, String> disharmoniesMap = new HashMap<Integer, String>();
 
-            int[] dishNumber = new int[methodName.length];
             //iterate over methods and check for disharmonies
             for (int i = 0; i < methodName.length; i++) {
-                int foundDisharmoniesCounter = 0;
+                String disharmonies = "";
+                int weight = 0;
+
                 //check feature envy
                 if (DisharmoniesFinder.isFeatureEnvy(atfd[i], laa[i], fdp[i])) {
-                    featureEnvyMethods.add(scopeName[i] + "." + methodName[i]);
-                    foundDisharmoniesCounter++;
+                    disharmonies += "   Feature envy";
                 }
 
                 //check brain method
                 if (DisharmoniesFinder.isBrainMethod(loc[i], cyclo[i], maxnesting[i], noav[i])) {
-                    brainMethods.add(scopeName[i] + "." + methodName[i]);
-                    foundDisharmoniesCounter++;
+                    disharmonies += "   Brain method";
                 }
 
                 //check intensive coupling
                 if (DisharmoniesFinder.isIntensiveCoupling(cint[i], cdisp[i], maxnesting[i])) {
-                    intensiveCouplingMethods.add(scopeName[i] + "." + methodName[i]);
-                    foundDisharmoniesCounter++;
+                    disharmonies += "  Intensive coupling";
                 }
 
                 //check dispersed coupling
                 if (DisharmoniesFinder.isDispersedCoupling(cint[i], cdisp[i], maxnesting[i])) {
-                    dispersedCouplingMethods.add(scopeName[i] + "." + methodName[i]);
-                    foundDisharmoniesCounter++;
+                    disharmonies += "  Dispersed coupling";
                 }
 
                 //check shotgun surgery
                 if (DisharmoniesFinder.isShotgunSurgery(cm[i], cc[i])) {
-                    shotgunSurgery.add(scopeName[i] + "." + methodName[i]);
-                    foundDisharmoniesCounter++;
+                    disharmonies += "  Shotgun surgery";
                 }
-                dishNumber[i] = foundDisharmoniesCounter;
+
+                if (!disharmonies.equals("")) {
+                    disharmoniesMap.put(i, disharmonies);
+
+                    //assign weight
+                    if (atfd[i] >= SemanticThreshold.SHORT_MEM_CAPACITY_MAX.getValue()) {
+                        weight++;
+                    }
+                    if (cdisp[i] >= NormalizedThreshold.THREE_QUARTERS.getValue()) {
+                        weight++;
+                    }
+                    if (cyclo[i] >= ThresholdCYCLO.VERY_HIGH.getValue()) {
+                        weight++;
+                    }
+
+                    if (maxnesting[i] >= SemanticThreshold.SHORT_MEM_CAPACITY_MAX.getValue()) {
+                        weight++;
+                    }
+
+                    if (noav[i] >= SemanticThreshold.SHORT_MEM_CAPACITY_MAX.getValue()) {
+                        weight++;
+                    }
+
+                    if (laa[i] <= NormalizedThreshold.ONE_QUARTER.getValue()) {
+                        weight++;
+                    }
+
+                    weightMap.put(i, weight);
+
+                }
 
             }
 
-            //add feature envy to report
-            for (String item : featureEnvyMethods) {
-                report.add(new ReportItem(item, METHOD_LEVEL, "Feature envy"));
-            }
+            //sort weight map
+            Map<Integer, Integer> sortedMethodsByWeight = MetricUtils.sortHashMapByValuesD(weightMap);
 
-            //add brain methods to report
-            for (String item : brainMethods) {
-                report.add(new ReportItem(item, METHOD_LEVEL, "Brain method"));
-            }
+            //iterate over methods and fullfill resport
+            for (Integer key : sortedMethodsByWeight.keySet()) {
+                int index = key.intValue();
+                boolean isCritical = false;
+                if (sortedMethodsByWeight.get(key) > 0) {
+                    isCritical = true;
+                }
+                report.add(new ReportItem(scopeName[index] + "." + methodName[index], METHOD_LEVEL, disharmoniesMap.get(key), isCritical));
 
-            //add intensive coupling to report
-            for (String item : intensiveCouplingMethods) {
-                report.add(new ReportItem(item, METHOD_LEVEL, "Intensive coupling"));
-            }
-
-            //add dispersed coupling to report
-            for (String item : dispersedCouplingMethods) {
-                report.add(new ReportItem(item, METHOD_LEVEL, "Dispersed coupling"));
-            }
-
-            //add shotgun surgery to report
-            for (String item : shotgunSurgery) {
-                report.add(new ReportItem(item, METHOD_LEVEL, "Shotgun surgery"));
             }
 
         }
@@ -147,15 +160,15 @@ public class PerformanceAnalyzer {
                 dishNumber[i] = foundDisharmoniesCounter;
             }
 
-            //report about God classes
-            for (String item : godClasses) {
-                report.add(new ReportItem(item, CLASS_LEVEL, "God Class"));
-            }
-
-            //report about Brain class
-            for (String item : brainClasses) {
-                report.add(new ReportItem(item, CLASS_LEVEL, "Brain Class"));
-            }
+//            //report about God classes
+//            for (String item : godClasses) {
+//                report.add(new ReportItem(item, CLASS_LEVEL, "God Class"));
+//            }
+//
+//            //report about Brain class
+//            for (String item : brainClasses) {
+//                report.add(new ReportItem(item, CLASS_LEVEL, "Brain Class"));
+//            }
 
         }
 

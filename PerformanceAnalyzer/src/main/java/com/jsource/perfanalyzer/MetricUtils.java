@@ -1,5 +1,12 @@
 package com.jsource.perfanalyzer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 /**
  * @file MetricUtils.java
  * @brief
@@ -56,8 +63,6 @@ public class MetricUtils {
         return result;
     }
 
- 
-
     public static double[] getDoubleColumn(double[][] array, int index) {
         double[] column = new double[array.length];
 
@@ -77,5 +82,40 @@ public class MetricUtils {
         }
 
         return column;
+    }
+
+    public static LinkedHashMap sortHashMapByValuesD(HashMap<Integer, Integer> passedMap) {
+        List<Integer> mapKeys = new ArrayList(passedMap.keySet());
+        List<Integer> mapValues = new ArrayList(passedMap.values());
+        Collections.sort(mapValues);
+
+        Collections.sort(mapKeys);
+
+        Collections.reverse(mapValues);
+        Collections.reverse(mapKeys);
+
+        LinkedHashMap sortedMap = new LinkedHashMap();
+
+        Iterator<Integer> valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            Integer val = valueIt.next();
+            Iterator<Integer> keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Integer key = keyIt.next();
+                int comp1 = passedMap.get(key);
+                int comp2 = val.intValue();
+
+                if (comp1 == comp2) {
+                    passedMap.remove(key);
+                    mapKeys.remove(key);
+                    sortedMap.put(key, val);
+                    break;
+                }
+
+            }
+
+        }
+        return sortedMap;
     }
 }

@@ -5,9 +5,6 @@
  */
 package com.jsource.perfanalyzer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author TOSHIBA
@@ -15,9 +12,8 @@ import java.util.List;
 public class DisharmoniesFinder {
 
     /**
-     * Finds classes with "God class" disharmony.
+     * Defines if class matches God class.
      *
-     * @param classNames
      * @param atfd
      * @param wmc
      * @param tcc
@@ -35,6 +31,14 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if class matches Brain class.
+     *
+     * @param loc
+     * @param wmc
+     * @param tcc
+     * @return
+     */
     public static boolean isBrainClass(double loc, double wmc, double tcc) {
         boolean result = false;
 
@@ -62,6 +66,14 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if method matches Feature envy.
+     *
+     * @param atfd
+     * @param laa
+     * @param fdp
+     * @return
+     */
     public static boolean isFeatureEnvy(double atfd, double laa, double fdp) {
         boolean result = false;
 
@@ -73,6 +85,15 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if method matches Brain method.
+     *
+     * @param loc
+     * @param cyclo
+     * @param maxnesting
+     * @param noav
+     * @return
+     */
     public static boolean isBrainMethod(double loc, double cyclo, double maxnesting, double noav) {
         boolean result = false;
 
@@ -84,6 +105,14 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if method matches intensive coupling.
+     *
+     * @param cint
+     * @param cdisp
+     * @param maxnesting
+     * @return
+     */
     public static boolean isIntensiveCoupling(double cint, double cdisp, double maxnesting) {
         boolean result = false;
 
@@ -97,6 +126,14 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if method matches dispersed coupling.
+     *
+     * @param cint
+     * @param cdisp
+     * @param maxnesting
+     * @return
+     */
     public static boolean isDispersedCoupling(double cint, double cdisp, double maxnesting) {
         boolean result = false;
 
@@ -108,6 +145,13 @@ public class DisharmoniesFinder {
         return result;
     }
 
+    /**
+     * Defines if method matches shotgun surgery.
+     *
+     * @param cm
+     * @param cc
+     * @return
+     */
     public static boolean isShotgunSurgery(double cm, double cc) {
         boolean result = false;
 
