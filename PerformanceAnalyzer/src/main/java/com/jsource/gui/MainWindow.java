@@ -16,8 +16,11 @@ import com.jsource.perfanalyzer.MetricUtils;
 import com.jsource.perfanalyzer.PerformanceAnalyzer;
 import com.jsource.perfanalyzer.ReportItem;
 import com.jsource.projectsmanager.Project;
+import com.jsource.projectsmanager.ProjectConstants;
+import com.jsource.projectsmanager.ProjectIO;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,7 +30,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     ExcelFileFilter excelFileFilter = null;
     ProjectFileFilter projectFileFilter = null;
-    Project currentProject = new Project("path/to/file");
+    Project currentProject = new Project(ProjectConstants.DEFAULT_PROJECT_PATH);
 
     /**
      * Creates new form MainWindow
@@ -470,7 +473,12 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_clearReportMIActionPerformed
 
     private void newProjectMIActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_newProjectMIActionPerformed
-        // TODO add your handling code here:
+        currentProject.clear();
+        clearTableContent(methodMetricsTable);
+        clearTableContent(classMetricsTable);
+        clearTableContent(reportTable);
+        //declare new project
+        currentProject = new Project(ProjectConstants.DEFAULT_PROJECT_PATH);
     }// GEN-LAST:event_newProjectMIActionPerformed
 
     private void exportReportMIActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_exportReportMIActionPerformed
@@ -507,8 +515,6 @@ public class MainWindow extends javax.swing.JFrame {
             classesReport = analyzer.analyzePerformanceForClasses(currentProject.getClassMetrics());
             System.out.println("Classes analyzed");
         }
-        
-        
 
         //add analysis result to project report (if any results exist)
         if (methodsReport.isEmpty() && classesReport.isEmpty()) {
@@ -527,7 +533,7 @@ public class MainWindow extends javax.swing.JFrame {
             int rowsCount = 0;
             for (ReportItem repItem : currentProject.getReport()) {
                 if (repItem != null) {
-                    String[] newRow = new String[]{repItem.getName(), repItem.getLevel(), repItem.getDescription(),String.valueOf(repItem.isIsCritical())};
+                    String[] newRow = new String[]{repItem.getName(), repItem.getLevel(), repItem.getDescription(), String.valueOf(repItem.isIsCritical())};
                     tableModel.insertRow(rowsCount, newRow);
                     rowsCount++;
                 }
@@ -539,10 +545,52 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void openMIActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openMIActionPerformed
         String filePath = selectFile(FileFormat.PROJECT);
+        currentProject.clear();
+        clearTableContent(methodMetricsTable);
+        clearTableContent(classMetricsTable);
+        clearTableContent(reportTable);
+        currentProject = ProjectIO.openProject(filePath);
+
+        // update table with method level metrics
+        DefaultTableModel methodTableModel = (DefaultTableModel) methodMetricsTable
+                .getModel();
+        for (int i = 0; i < currentProject.getMethodMetrics().length; i++) {
+            methodTableModel.insertRow(i, currentProject.getMethodMetrics()[i]);
+        }
+
+        // update table with class level metrics
+        DefaultTableModel classTableModel = (DefaultTableModel) classMetricsTable
+                .getModel();
+        for (int i = 0; i < currentProject.getClassMetrics().length; i++) {
+            classTableModel.insertRow(i, currentProject.getClassMetrics()[i]);
+        }
+
+        // update table with report
+        DefaultTableModel reportTableModel = (DefaultTableModel) reportTable
+                .getModel();
+
+        int rowsCount = 0;
+        for (ReportItem repItem : currentProject.getReport()) {
+            if (repItem != null) {
+                String[] newRow = new String[]{repItem.getName(), repItem.getLevel(), repItem.getDescription(), String.valueOf(repItem.isIsCritical())};
+                reportTableModel.insertRow(rowsCount, newRow);
+                rowsCount++;
+            }
+
+        }
+
     }// GEN-LAST:event_openMIActionPerformed
 
     private void saveProjectMIActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveProjectMIActionPerformed
-        // TODO add your handling code here:
+        String filePath = selectSavePath();
+        boolean isSaved = ProjectIO.saveProject(currentProject, filePath);
+        String resultMessage = "Project was not saved";
+        if (isSaved) {
+            resultMessage = "Projects saved successfully";
+        }
+
+        JOptionPane.showMessageDialog(null, resultMessage, null, JOptionPane.INFORMATION_MESSAGE);
+
     }// GEN-LAST:event_saveProjectMIActionPerformed
 
     private void loadMethodMetricsMIActionPerformed(
@@ -647,6 +695,22 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         int dialogReturn = customFileChooser.showOpenDialog(this);
+        // check if file was selected
+        if (dialogReturn == JFileChooser.APPROVE_OPTION) {
+            File file = customFileChooser.getSelectedFile();
+            selectedFilePath = file.getAbsolutePath();
+            System.out.println("Selected file: " + selectedFilePath);
+        } else {
+            System.out.println("File access cancelled by user");
+        }
+
+        return selectedFilePath;
+    }
+
+    public String selectSavePath() {
+        String selectedFilePath = null;
+        customFileChooser.setFileFilter(projectFileFilter);
+        int dialogReturn = customFileChooser.showSaveDialog(this);
         // check if file was selected
         if (dialogReturn == JFileChooser.APPROVE_OPTION) {
             File file = customFileChooser.getSelectedFile();
