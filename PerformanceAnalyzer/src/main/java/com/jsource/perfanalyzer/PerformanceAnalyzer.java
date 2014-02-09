@@ -111,7 +111,7 @@ public class PerformanceAnalyzer {
             for (Integer key : sortedMethodsByWeight.keySet()) {
                 int index = key.intValue();
                 boolean isCritical = false;
-                if (sortedMethodsByWeight.get(key) > 0) {
+                if (sortedMethodsByWeight.get(key) > 3) {
                     isCritical = true;
                 }
                 report.add(new ReportItem(scopeName[index] + "." + methodName[index], METHOD_LEVEL, disharmoniesMap.get(key), isCritical));
@@ -181,7 +181,7 @@ public class PerformanceAnalyzer {
             for (Integer key : sortedMethodsByWeight.keySet()) {
                 int index = key.intValue();
                 boolean isCritical = false;
-                if (sortedMethodsByWeight.get(key) > 0) {
+                if (sortedMethodsByWeight.get(key) >= 2) {
                     isCritical = true;
                 }
                 report.add(new ReportItem(classNames[index], CLASS_LEVEL, disharmoniesMap.get(key), isCritical));

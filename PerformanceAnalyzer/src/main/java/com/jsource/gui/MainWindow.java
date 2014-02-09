@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.jsource.dataloader.MetricsReader;
 import com.jsource.dataloader.SpreadsheetReader;
+import com.jsource.graphrepbuilder.LineChartBuilder;
 import com.jsource.perfanalyzer.MetricUtils;
 import com.jsource.perfanalyzer.PerformanceAnalyzer;
 import com.jsource.perfanalyzer.ReportItem;
@@ -499,13 +500,22 @@ public class MainWindow extends javax.swing.JFrame {
         boolean methodsAnalysisRequested = analyzeMethodsCheck.isSelected();
         boolean classesAnalysisRequested = analyzeClassesCheck.isSelected();
 
+        boolean graphicalReportRequested = graphicalRepCheck.isSelected();
+
         PerformanceAnalyzer analyzer = new PerformanceAnalyzer();
 
         //analyze methods
         List<ReportItem> methodsReport = new ArrayList<ReportItem>();
         if (methodsAnalysisRequested) {
+
             methodsReport = analyzer.analyzePerformanceForMethods(currentProject.getMethodMetrics());
             System.out.println("Methods analyzed");
+
+            if (graphicalReportRequested) {
+                LineChartBuilder lineChart = new LineChartBuilder();
+                lineChart.buildChartForMethods(currentProject.getMethodMetrics());
+
+            }
 
         }
 
